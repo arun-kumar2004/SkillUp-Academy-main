@@ -10,6 +10,7 @@ const auth = getAuth();
 
 // Defining special user ID
 const specialUserId = "S4XcnlLbmYUR4um91HQx910qEtC3"; 
+let currentUser = null;
 
 async function getSpecialUserName() {
     const specialUserDoc = await getDoc(doc(db, "users", specialUserId));
@@ -85,6 +86,7 @@ async function getAllUsersDetails(currentUser, specialUserName) {
 onAuthStateChanged(auth, async (user) => {
     if (user) {
         // User is authenticated
+        currentUser = user; // Store the current user
         if (user.uid === specialUserId) {
             const specialUserName = await getSpecialUserName();
             console.log("Special user authenticated. Displaying all user details.");
@@ -126,7 +128,7 @@ document.getElementById("delete-btn").onclick = async function () {
                 console.log(`User ${userId} deleted successfully.`);
             }
             alert("Selected user(s) deleted successfully.");
-            getAllUsersDetails(user, await getSpecialUserName()); // Refresh the table after deletion
+            getAllUsersDetails(currentUser, await getSpecialUserName()); // Refresh the table after deletion
         } catch (error) {
             console.error("Error deleting user:", error);
             alert("Error deleting user(s): " + error.message);
